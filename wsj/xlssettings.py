@@ -14,8 +14,8 @@ fntGreen.colour_index = 2
 style = XFStyle()
 style.font = fnt
 
-styleRed = XFStyle()
-styleRed.font = fntRed
-
 styleGreen = XFStyle()
 styleGreen.font = fntGreen
+
+styleRed = XFStyle()
+styleRed.font = fntRed

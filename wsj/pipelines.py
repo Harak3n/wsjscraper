@@ -19,8 +19,8 @@ class WsjPipeline(object):
 
         ws.write(0, 0, 'Company', style)
         ws.write(0, 1, 'Symbol', style)
-        ws.write(0, 2, 'date1', style)
-        ws.write(0, 3, 'date2', style)
+        ws.write(0, 2, 'Date1', style)
+        ws.write(0, 3, 'Date2', style)
         ws.write(0, 4, 'Chg', style)
         ws.write(0, 5, '% Chg', style)
         ws.write(0, 6, '% Float', style)
