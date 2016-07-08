@@ -18,3 +18,4 @@ class WsjItem(scrapy.Item):
     pr_float = scrapy.Field()
     days_to_cover = scrapy.Field()
     avg_daily_volume = scrapy.Field()
+    dates = scrapy.Field()

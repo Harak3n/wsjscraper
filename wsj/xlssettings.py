@@ -5,11 +5,11 @@ fnt.name = 'Arial'
 
 fntRed = Font()
 fntRed.name = 'Arial'
-fntRed.colour_index = 3
+fntRed.colour_index = 2
 
 fntGreen = Font()
 fntGreen.name = 'Arial'
-fntGreen.colour_index = 2
+fntGreen.colour_index = 3
 
 style = XFStyle()
 style.font = fnt

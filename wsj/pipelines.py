@@ -5,58 +5,71 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
+import scrapy
 import datetime
 from xlssettings import *
 from xlutils.copy import copy
-from xlwt import *
 from xlrd import open_workbook
+from scrapy.xlib.pydispatch import dispatcher
 
 class WsjPipeline(object):
 
     def __init__(self):
-        w = Workbook()
-        ws = w.add_sheet('test sheet')
+        self.w = Workbook()
+        self.ws = self.w.add_sheet('test sheet')
+        self.wline = 0
 
-        ws.write(0, 0, 'Company', style)
-        ws.write(0, 1, 'Symbol', style)
-        ws.write(0, 2, 'Date1', style)
-        ws.write(0, 3, 'Date2', style)
-        ws.write(0, 4, 'Chg', style)
-        ws.write(0, 5, '% Chg', style)
-        ws.write(0, 6, '% Float', style)
-        ws.write(0, 7, 'Days to cover', style)
-        ws.write(0, 8, 'Avg daily volume', style)
+        self.ws.write(self.wline, 0, 'Company', style)
+        self.ws.write(self.wline, 1, 'Symbol', style)
+        self.dates = 0
+        self.ws.write(self.wline, 4, 'Chg', style)
+        self.ws.write(self.wline, 5, '% Chg', style)
+        self.ws.write(self.wline, 6, '% Float', style)
+        self.ws.write(self.wline, 7, 'Days to cover', style)
+        self.ws.write(self.wline, 8, 'Avg daily volume', style)
 
         self.xlsname = 'WsjData-'+str(datetime.datetime.now().isoformat()).split('.')[0]+'.xls'
 
-        w.save(self.xlsname)
+        self.w.save(self.xlsname)
 
+    def xls_close(self):
+        try:
+            self.w.save(self.xlsname)
+        except:
+            print 'Failed to close xls file'
 
     def process_item(self, item, spider):
-        rb = open_workbook(self.xlsname,formatting_info=True)
-        r_sheet = rb.sheet_by_index(0)
-        r = r_sheet.nrows
-        wb = copy(rb)
-        ws = wb.get_sheet(0)
+        # rb = open_workbook(self.xlsname,formatting_info=True)
+        # r_sheet = rb.sheet_by_index(0)
+        # r = r_sheet.nrows
+        # wb = copy(rb)
+        # ws = wb.get_sheet(0)
+
+        if self.dates == 0:
+            self.ws.write(0, 2, item['dates'][:7], style)
+            self.ws.write(0, 3, item['dates'][7:], style)
+            self.dates = 1
+
+        self.wline += 1
 
         styleChg = style
         stylePChg = style
-        ws.write(r, 0, item['company'], style)
-        ws.write(r, 1, item['symbol'], style)
-        ws.write(r, 2, item['date1'], style)
-        ws.write(r, 3, item['date2'], style)
-        ws.write(r, 6, item['pr_float'], style)
-        ws.write(r, 7, item['days_to_cover'], style)
-        ws.write(r, 8, item['avg_daily_volume'], style)
+        self.ws.write(self.wline, 0, item['company'], style)
+        self.ws.write(self.wline, 1, item['symbol'], style)
+        self.ws.write(self.wline, 2, item['date1'], style)
+        self.ws.write(self.wline, 3, item['date2'], style)
+        self.ws.write(self.wline, 6, item['pr_float'], style)
+        self.ws.write(self.wline, 7, item['days_to_cover'], style)
+        self.ws.write(self.wline, 8, item['avg_daily_volume'], style)
         if item['chg'] != '...':
             styleChg = styleRed if int(item['chg'].
                 replace(',','')) < 0 else styleGreen
-        ws.write(r, 4, item['chg'], styleChg)
+        self.ws.write(self.wline, 4, item['chg'], styleChg)
         if item['pr_chg'] != '...':
             stylePChg = styleRed if int(item['pr_chg'].
                 replace(',','').replace('.','')) < 0 else styleGreen
-        ws.write(r, 5, item['pr_chg'], stylePChg)
+        self.ws.write(self.wline, 5, item['pr_chg'], stylePChg)
 
-        wb.save(self.xlsname)
+        dispatcher.connect(self.xls_close, scrapy.signals.spider_closed)
 
         return item
