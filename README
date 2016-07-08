@@ -1,0 +1,7 @@
+The Wall street journal data scrapper.
+
+This is a scrapy project, before cloning it you should install some dependences.
+
+sudo pip scrapy xlrd xlutils
+
+You can change destination folder for xls files in xlssettings.py
