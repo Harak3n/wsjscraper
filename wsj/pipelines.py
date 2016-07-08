@@ -10,7 +10,6 @@ import datetime
 from xlssettings import *
 from xlutils.copy import copy
 from xlrd import open_workbook
-from scrapy.xlib.pydispatch import dispatcher
 
 class WsjPipeline(object):
 
@@ -28,22 +27,12 @@ class WsjPipeline(object):
         self.ws.write(self.wline, 7, 'Days to cover', style)
         self.ws.write(self.wline, 8, 'Avg daily volume', style)
 
-        self.xlsname = 'WsjData-'+str(datetime.datetime.now().isoformat()).split('.')[0]+'.xls'
+        self.xlsname = saving_directory + 'WsjData-' + \
+            str(datetime.datetime.now().isoformat()).split('.')[0]+'.xls'
 
         self.w.save(self.xlsname)
 
-    def xls_close(self):
-        try:
-            self.w.save(self.xlsname)
-        except:
-            print 'Failed to close xls file'
-
     def process_item(self, item, spider):
-        # rb = open_workbook(self.xlsname,formatting_info=True)
-        # r_sheet = rb.sheet_by_index(0)
-        # r = r_sheet.nrows
-        # wb = copy(rb)
-        # ws = wb.get_sheet(0)
 
         if self.dates == 0:
             self.ws.write(0, 2, item['dates'][:7], style)
@@ -70,6 +59,7 @@ class WsjPipeline(object):
                 replace(',','').replace('.','')) < 0 else styleGreen
         self.ws.write(self.wline, 5, item['pr_chg'], stylePChg)
 
-        dispatcher.connect(self.xls_close, scrapy.signals.spider_closed)
-
         return item
+
+    def close_spider(self, spider):
+        self.w.save(self.xlsname)

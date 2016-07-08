@@ -1,5 +1,7 @@
 from xlwt import *
 
+saving_directory = './'
+
 fnt = Font()
 fnt.name = 'Arial'
 
