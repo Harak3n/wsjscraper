@@ -2,7 +2,8 @@ The Wall street journal data scrapper.
 
 This is a scrapy project, before cloning it you should install some dependences.
 
-	> sudo pip scrapy xlrd xlutils
+	>sudo apt-get install python-dev python-pip libxml2-dev libxslt1-dev zlib1g-dev libffi-dev libssl-dev
+	> sudo pip install xlrd xlutils
 
 You can change destination folder for xls files in xlssettings.py
 
